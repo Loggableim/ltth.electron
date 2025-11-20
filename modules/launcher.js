@@ -225,12 +225,45 @@ class Launcher {
 
             spinner.stop();
             this.log.success('Installation erfolgreich!');
+            
+            // Rebuild native modules for current Node.js version
+            await this.rebuildNativeModules();
         } catch (error) {
             this.log.error('Installation fehlgeschlagen!');
             this.log.error(`Fehler: ${error.message}`);
             this.log.newLine();
             this.log.info(`Versuche es manuell mit: ${command}`);
             throw new Error('Dependency-Installation fehlgeschlagen');
+        }
+    }
+
+    /**
+     * Rebuilds native modules for the current Node.js version
+     */
+    async rebuildNativeModules() {
+        try {
+            this.log.info('Rebuilding native modules...');
+            
+            // List of native modules that need rebuilding
+            const nativeModules = ['better-sqlite3'];
+            
+            for (const module of nativeModules) {
+                const modulePath = path.join(this.projectRoot, 'node_modules', module);
+                if (fs.existsSync(modulePath)) {
+                    // Force rebuild from source to ensure compatibility with current Node version
+                    execSync(`npm rebuild ${module} --build-from-source`, {
+                        cwd: this.projectRoot,
+                        stdio: ['pipe', 'pipe', 'pipe'],
+                        encoding: 'utf8'
+                    });
+                }
+            }
+
+            this.log.success('Native modules rebuilt successfully!');
+        } catch (error) {
+            this.log.warn('Failed to rebuild native modules (non-critical)');
+            this.log.debug(`Details: ${error.message}`);
+            // Don't throw - this is non-critical if it fails
         }
     }
 
