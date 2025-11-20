@@ -2,6 +2,13 @@
 node_modules/
 package-lock.json
 
+# Electron build output
+dist/
+dist-electron/
+build/
+out/
+release/
+
 # Database files
 database.db
 database.db-shm
@@ -50,3 +57,10 @@ plugins/*/data/
 plugins/plugins_state.json
 test-viewer-xp.js
 *.backup*
+
+# Electron specific
+.electron-builder.yml
+*.asar
+
+# Backup files
+package.server.json
