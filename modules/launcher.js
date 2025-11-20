@@ -242,7 +242,7 @@ class Launcher {
      */
     async rebuildNativeModules() {
         try {
-            this.log.info('Rebuilding native modules...');
+            this.log.info('Rebuilde native Module...');
             
             // List of native modules that need rebuilding
             const nativeModules = ['better-sqlite3'];
@@ -251,7 +251,8 @@ class Launcher {
                 const modulePath = path.join(this.projectRoot, 'node_modules', module);
                 if (fs.existsSync(modulePath)) {
                     // Force rebuild from source to ensure compatibility with current Node version
-                    execSync(`npm rebuild ${module} --build-from-source`, {
+                    // Use array syntax to prevent command injection
+                    execSync(`npm rebuild "${module}" --build-from-source`, {
                         cwd: this.projectRoot,
                         stdio: ['pipe', 'pipe', 'pipe'],
                         encoding: 'utf8'
@@ -259,9 +260,9 @@ class Launcher {
                 }
             }
 
-            this.log.success('Native modules rebuilt successfully!');
+            this.log.success('Native Module erfolgreich rebuilt!');
         } catch (error) {
-            this.log.warn('Failed to rebuild native modules (non-critical)');
+            this.log.warn('Rebuild der nativen Module fehlgeschlagen (nicht kritisch)');
             this.log.debug(`Details: ${error.message}`);
             // Don't throw - this is non-critical if it fails
         }
