@@ -4,6 +4,29 @@ Open-Source-Tool für TikTok LIVE Streaming mit Overlays, Alerts, Text-to-Speech
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18.0.0+-green.svg)](https://nodejs.org/)
+[![Electron](https://img.shields.io/badge/Electron-28.0.0-blue.svg)](https://www.electronjs.org/)
+
+---
+
+## 🎉 NEW: Windows Desktop App Available!
+
+This tool is now available as a **Windows Desktop Application** using Electron!
+
+📥 **[Download Installer](https://github.com/Loggableim/ltth.electron/releases)** (Coming Soon)
+
+**For Electron Desktop App:**
+- 📖 Quick Start: See [QUICK_START_ELECTRON.md](QUICK_START_ELECTRON.md)
+- 🏗️ Architecture: See [ELECTRON_README.md](ELECTRON_README.md)
+- ❓ Q&A: See [ELECTRON_SETUP_QA.md](ELECTRON_SETUP_QA.md)
+- 🔧 Troubleshooting: See [ELECTRON_TROUBLESHOOTING.md](ELECTRON_TROUBLESHOOTING.md)
+
+**Desktop App Benefits:**
+- ✅ Single-window application (no browser needed)
+- ✅ Auto-starts server on launch
+- ✅ Professional Windows installer or portable exe
+- ✅ Start menu shortcuts
+- ✅ Desktop shortcut
+- ✅ Clean user experience
 
 ---
 
@@ -68,17 +91,47 @@ Dieses Tool wird von mir als Solo-Entwickler zusammen mit Claude AI entwickelt. 
 
 ## Installation
 
-### Voraussetzungen
+### Option 1: Windows Desktop App (Empfohlen für End-User)
+
+**Download:**
+1. Download installer oder portable exe von [Releases](https://github.com/Loggableim/ltth.electron/releases)
+2. Run installer oder portable exe
+3. Fertig! App startet automatisch
+
+**Oder Build selbst:**
+```bash
+# Repository klonen
+git clone https://github.com/Loggableim/ltth.electron.git
+cd ltth.electron
+
+# Dependencies installieren
+npm install
+
+# Desktop App starten
+npm start
+
+# Oder für Distribution bauen
+npm run build
+# Output: dist/TikTok Stream Tool Setup 1.0.3.exe
+```
+
+Siehe [QUICK_START_ELECTRON.md](QUICK_START_ELECTRON.md) für Details.
+
+---
+
+### Option 2: Als Node.js Server (Für Entwickler)
+
+**Voraussetzungen:**
 - Node.js 18.0.0+
 - Moderner Browser
 - OBS Studio (für Overlays)
 
-### Setup
+**Setup:**
 
 ```bash
 # Repository klonen
-git clone https://github.com/yourusername/pupcidslittletiktokhelper.git
-cd pupcidslittletiktokhelper
+git clone https://github.com/Loggableim/ltth.electron.git
+cd ltth.electron
 
 # Dependencies installieren
 npm install
@@ -89,8 +142,10 @@ echo "EULER_API_KEY=dein_api_key_hier" > .env
 
 # Option 2: Oder über Dashboard Settings nach dem Start
 
-# Server starten
-npm start
+# Server starten (statt Electron)
+node server.js
+# Oder mit dem Launcher:
+node launch.js
 ```
 
 Dashboard öffnet sich automatisch unter `http://localhost:3000`
