@@ -2,6 +2,11 @@
 node_modules/
 package-lock.json
 
+# Electron build output
+dist/
+out/
+build/icon.ico
+
 # Database files
 database.db
 database.db-shm
