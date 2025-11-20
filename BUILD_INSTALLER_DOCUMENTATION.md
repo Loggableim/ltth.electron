@@ -41,8 +41,8 @@ Das Skript führt folgende Schritte automatisch und sequenziell aus:
 ### Schritt 7: electron-builder Konfiguration
 - Prüft ob `electron-builder.yml` oder `electron-builder.json` existiert
 - **Falls keine Config vorhanden**: Erstellt automatisch eine `electron-builder.yml` mit folgenden Standardeinstellungen:
-  - **appId**: `com.tiktokstreamtool.app`
-  - **productName**: `TikTok Stream Tool`
+  - **appId**: `com.pupcid.littletiktokhelper.app`
+  - **productName**: `Pup Cid´s Little Tiktok Helper`
   - **directories.output**: `dist`
   - **win.target**: `nsis` (NSIS Installer für Windows)
   - **NSIS Optionen**: 
@@ -102,7 +102,7 @@ Das Skript führt folgende Schritte automatisch und sequenziell aus:
 ## Ausgabedateien
 
 Nach erfolgreichem Build befinden sich im `dist` Ordner:
-- `TikTok Stream Tool Setup <version>.exe` - Der Windows Installer
+- `Pup Cid´s Little Tiktok Helper Setup <version>.exe` - Der Windows Installer
 - Möglicherweise weitere Dateien wie `.yml` Metadaten
 
 ## Voraussetzungen

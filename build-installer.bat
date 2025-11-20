@@ -1,6 +1,6 @@
 @echo off
 REM ===============================================
-REM TikTok Stream Tool - Windows Installer Builder
+REM Pup Cid´s Little Tiktok Helper - Windows Installer Builder
 REM ===============================================
 REM Automatisierter Build-Prozess für Electron App mit Windows Setup.exe
 REM Keine manuellen Eingaben erforderlich - Doppelklick zum Starten
@@ -13,7 +13,7 @@ chcp 65001 >nul 2>&1
 
 echo.
 echo ===============================================
-echo   TikTok Stream Tool - Installer Build
+echo   Pup Cid´s Little Tiktok Helper - Installer Build
 echo ===============================================
 echo.
 echo Starte automatischen Build-Prozess...
@@ -171,8 +171,8 @@ if exist "electron-builder.yml" (
     
     REM Erstelle Standard electron-builder.yml Konfiguration
     (
-        echo appId: com.tiktokstreamtool.app
-        echo productName: TikTok Stream Tool
+        echo appId: com.pupcid.littletiktokhelper.app
+        echo productName: Pup Cid´s Little Tiktok Helper
         echo directories:
         echo   output: dist
         echo win:
