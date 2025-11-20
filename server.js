@@ -121,12 +121,13 @@ app.use((req, res, next) => {
     if (isDashboard || isPluginUI) {
         res.header('X-Frame-Options', 'SAMEORIGIN');
         // Dashboard & Plugin UI CSP: Strict policy - inline scripts allowed via hash
-        // NOTE: Some plugin UIs (e.g., weather-control, soundboard) use inline scripts
-        // These are allowed via specific SHA256 hashes to prevent XSS attacks
-        // while maintaining functionality
+        // NOTE: Some plugin UIs (e.g., weather-control, soundboard, viewer-xp) use inline scripts
+        // These are allowed via specific SHA256 hashes to prevent XSS attacks while maintaining functionality
+        // Hash 1: Socket.IO client initialization
+        // Hash 2: Plugin UI inline scripts (weather-control, soundboard, viewer-xp, openshock, etc.)
         res.header('Content-Security-Policy',
             `default-src 'self'; ` +
-            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU=' 'sha256-R/sTMGM5stOaRxqbRG+qbOedYMqQytZZssYbq0iQGFA='; ` +  // Allow specific inline scripts via hash
+            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU=' 'sha256-R/sTMGM5stOaRxqbRG+qbOedYMqQytZZssYbq0iQGFA='; ` +
             `style-src 'self' 'unsafe-inline'; ` +
             `img-src 'self' data: blob: https:; ` +
             `font-src 'self' data:; ` +
@@ -140,9 +141,13 @@ app.use((req, res, next) => {
     } else {
         res.header('X-Frame-Options', 'SAMEORIGIN');
         // Strict CSP for other routes (including overlays for OBS)
+        // NOTE: Some overlays (e.g., viewer-xp, weather-control) use inline scripts
+        // These are allowed via specific SHA256 hashes to prevent XSS attacks while maintaining functionality
+        // Hash 1: Socket.IO client initialization
+        // Hash 2: Overlay inline scripts (viewer-xp, weather-control, etc.)
         res.header('Content-Security-Policy',
             `default-src 'self'; ` +
-            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU=' 'sha256-R/sTMGM5stOaRxqbRG+qbOedYMqQytZZssYbq0iQGFA='; ` +  // Allow specific inline scripts via hash
+            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU=' 'sha256-R/sTMGM5stOaRxqbRG+qbOedYMqQytZZssYbq0iQGFA='; ` +
             `style-src 'self' 'unsafe-inline'; ` +
             `img-src 'self' data: blob: https:; ` +
             `font-src 'self' data:; ` +
