@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Database files
+database.db
+database.db-shm
+database.db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# User profile management
+user_configs/.active_profile
+database.db.backup
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test/debug files
+test-euler-debug.js
+
+# Plugin runtime data
+plugins/*/data/
+plugins/plugins_state.json
+test-viewer-xp.js
+*.backup*
