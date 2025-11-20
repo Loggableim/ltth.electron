@@ -88,7 +88,6 @@
           ]
         }
       ],
-      "icon": "build/icon.ico",
       "publisherName": "Pup Cids"
     },
     "nsis": {
@@ -97,11 +96,7 @@
       "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "TikTok Stream Tool",
-      "license": "LICENSE",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
-      "installerHeaderIcon": "build/icon.ico"
+      "shortcutName": "TikTok Stream Tool"
     },
     "portable": {
       "artifactName": "TikTok-Stream-Tool-Portable-${version}.exe"
