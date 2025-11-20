@@ -71,6 +71,10 @@ class TikTokConnector extends EventEmitter {
         // Gift catalog tracking - gifts seen in current stream session
         this.sessionGifts = new Map(); // Map<giftId, giftData>
 
+        // Gift streak tracking - track previous repeatCount per user/gift
+        // Key format: "username:giftId", Value: { previousRepeatCount, timestamp }
+        this.giftStreaks = new Map();
+
         // Eulerstream WebSocket event emitter
         this.eventEmitter = null;
         
@@ -670,27 +674,59 @@ class TikTokConnector extends EventEmitter {
                 }
             }
 
-            // Calculate coins: diamond_count * 2 * repeat_count
-            const repeatCount = giftData.repeatCount;
+            // Get user data early for streak tracking
+            const userData = this.extractUserData(data);
+            
+            // Track gift streaks to calculate incremental amounts
+            // All gifts can be streakable, not just giftType === 1
+            // Exception: Some gifts like Team Heart can only be sent once and should use full repeatCount
+            const streakKey = `${userData.username}:${giftData.giftId}`;
+            const currentRepeatCount = giftData.repeatCount;
             const diamondCount = giftData.diamondCount;
-            let coins = 0;
-
-            if (diamondCount > 0) {
-                coins = diamondCount * 2 * repeatCount;
+            
+            // Get previous repeat count for this user/gift combination
+            const streakData = this.giftStreaks.get(streakKey);
+            const previousRepeatCount = streakData ? streakData.previousRepeatCount : 0;
+            
+            // Calculate incremental repeat count (how many gifts in THIS event)
+            // If currentRepeatCount <= previousRepeatCount, this is a new streak starting
+            // So we use the full currentRepeatCount
+            let incrementalRepeatCount;
+            if (currentRepeatCount > previousRepeatCount) {
+                // Continuing streak - use incremental
+                incrementalRepeatCount = currentRepeatCount - previousRepeatCount;
+            } else {
+                // New streak or single gift - use full count
+                incrementalRepeatCount = currentRepeatCount;
+            }
+            
+            // Calculate incremental coins (not cumulative)
+            let incrementalCoins = 0;
+            if (diamondCount > 0 && incrementalRepeatCount > 0) {
+                incrementalCoins = diamondCount * 2 * incrementalRepeatCount;
             }
 
-            this.logger.info(`🎁 [GIFT] ${giftData.giftName}: diamondCount=${diamondCount}, repeatCount=${repeatCount}, coins=${coins}, giftType=${giftData.giftType}, repeatEnd=${giftData.repeatEnd}`);
+            this.logger.info(`🎁 [GIFT] ${giftData.giftName}: diamondCount=${diamondCount}, repeatCount=${currentRepeatCount} (prev: ${previousRepeatCount}, incremental: ${incrementalRepeatCount}), incrementalCoins=${incrementalCoins}, giftType=${giftData.giftType}, repeatEnd=${giftData.repeatEnd}`);
 
-            // Check if streak ended
-            const isStreakEnd = giftData.repeatEnd;
-            const isStreakable = giftData.giftType === 1;
+            // Update streak tracking
+            this.giftStreaks.set(streakKey, {
+                previousRepeatCount: currentRepeatCount,
+                timestamp: Date.now()
+            });
+            
+            // Clean up old streak data (older than 1 minute)
+            const now = Date.now();
+            for (const [key, value] of this.giftStreaks.entries()) {
+                if (now - value.timestamp > 60000) {
+                    this.giftStreaks.delete(key);
+                }
+            }
 
-            // Only count if not streakable OR streakable and streak ended
-            if (!isStreakable || (isStreakable && isStreakEnd)) {
-                this.stats.totalCoins += coins;
+            // Only emit events if there's an incremental amount > 0
+            if (incrementalCoins > 0) {
+                this.stats.totalCoins += incrementalCoins;
                 this.stats.gifts++;
 
-                const userData = this.extractUserData(data);
                 const eventData = {
                     uniqueId: userData.username,
                     username: userData.username,
@@ -698,22 +734,22 @@ class TikTokConnector extends EventEmitter {
                     giftName: giftData.giftName,
                     giftId: giftData.giftId,
                     giftPictureUrl: giftData.giftPictureUrl,
-                    repeatCount: repeatCount,
+                    repeatCount: incrementalRepeatCount, // Use incremental count, not cumulative
                     diamondCount: diamondCount,
-                    coins: coins,
+                    coins: incrementalCoins, // Use incremental coins, not cumulative
                     totalCoins: this.stats.totalCoins,
-                    isStreakEnd: isStreakEnd,
+                    isStreakEnd: giftData.repeatEnd,
                     giftType: giftData.giftType,
                     timestamp: new Date().toISOString()
                 };
 
-                this.logger.info(`✅ [GIFT COUNTED] Total coins now: ${this.stats.totalCoins}`);
+                this.logger.info(`✅ [GIFT COUNTED] Incremental coins: ${incrementalCoins}, Total coins now: ${this.stats.totalCoins}`);
 
                 this.handleEvent('gift', eventData);
                 this.db.logEvent('gift', eventData.username, eventData);
                 this.broadcastStats();
             } else {
-                this.logger.info(`⏳ [STREAK RUNNING] ${giftData.giftName || 'Unknown Gift'} x${repeatCount} (${coins} coins, not counted yet)`);
+                this.logger.info(`⏳ [NO CHANGE] ${giftData.giftName || 'Unknown Gift'} - no incremental gifts in this event`);
             }
         });
 
@@ -1327,6 +1363,11 @@ class TikTokConnector extends EventEmitter {
                 if (data.giftId) components.push(data.giftId.toString());
                 if (data.giftName) components.push(data.giftName);
                 if (data.repeatCount) components.push(data.repeatCount.toString());
+                // Include timestamp to differentiate streak events with same incremental repeatCount
+                if (data.timestamp) {
+                    const roundedTime = Math.floor(new Date(data.timestamp).getTime() / 1000);
+                    components.push(roundedTime.toString());
+                }
                 break;
             case 'follow':
             case 'share':
