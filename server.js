@@ -120,14 +120,13 @@ app.use((req, res, next) => {
 
     if (isDashboard || isPluginUI) {
         res.header('X-Frame-Options', 'SAMEORIGIN');
-        // Dashboard & Plugin UI CSP: Strict policy - no inline scripts allowed
-        // NOTE: All HTML files (dashboard.html, plugin UIs, etc.) use EXTERNAL scripts
-        // via <script src="..."> tags, NOT inline scripts. This ensures CSP compliance.
-        // The script-src 'self' directive only allows scripts from the same origin,
-        // which prevents XSS attacks via inline script injection.
+        // Dashboard & Plugin UI CSP: Strict policy - inline scripts allowed via hash
+        // NOTE: Some plugin UIs (e.g., weather-control, soundboard) use inline scripts
+        // These are allowed via specific SHA256 hashes to prevent XSS attacks
+        // while maintaining functionality
         res.header('Content-Security-Policy',
             `default-src 'self'; ` +
-            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU='; ` +  // Allow specific Socket.IO inline script via hash
+            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU=' 'sha256-R/sTMGM5stOaRxqbRG+qbOedYMqQytZZssYbq0iQGFA='; ` +  // Allow specific inline scripts via hash
             `style-src 'self' 'unsafe-inline'; ` +
             `img-src 'self' data: blob: https:; ` +
             `font-src 'self' data:; ` +
@@ -143,7 +142,7 @@ app.use((req, res, next) => {
         // Strict CSP for other routes (including overlays for OBS)
         res.header('Content-Security-Policy',
             `default-src 'self'; ` +
-            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU='; ` +  // Allow specific Socket.IO inline script via hash
+            `script-src 'self' 'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU=' 'sha256-R/sTMGM5stOaRxqbRG+qbOedYMqQytZZssYbq0iQGFA='; ` +  // Allow specific inline scripts via hash
             `style-src 'self' 'unsafe-inline'; ` +
             `img-src 'self' data: blob: https:; ` +
             `font-src 'self' data:; ` +
